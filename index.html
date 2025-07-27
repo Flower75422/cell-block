@@ -1,0 +1,3339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cell Block - Blockchain Health Records</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        body.dark-mode header {
+            color: white;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            background: #ffd700;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+            animation: logoIntro 1s ease-out;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        @keyframes logoIntro {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.5) rotate(-180deg); 
+            }
+            50% { 
+                opacity: 0.8; 
+                transform: scale(1.2) rotate(-90deg); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1) rotate(0deg); 
+            }
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode h1 {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        body.dark-mode .card {
+            background: #2c3e50;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: #4a90e2;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e6ed;
+            padding-bottom: 10px;
+        }
+
+        body.dark-mode .card h2 {
+            color: #ffd700;
+            border-bottom: 2px solid #34495e;
+        }
+
+        .search-section {
+            margin-bottom: 30px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+            background: white;
+            color: #333;
+        }
+
+        body.dark-mode input[type="text"] {
+            background: #34495e;
+            border: 2px solid #4a90e2;
+            color: white;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        body.dark-mode input[type="text"]:focus {
+            border-color: #ffd700;
+        }
+
+        button {
+            background: linear-gradient(45deg, #4a90e2, #667eea);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .patient-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4a90e2;
+            transition: background-color 0.3s ease;
+        }
+
+        body.dark-mode .patient-info {
+            background: #34495e;
+            border-left: 4px solid #ffd700;
+        }
+
+        .blockchain-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .block {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .block::before {
+            content: "🔗";
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4a90e2;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .block-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .block-id {
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        .timestamp {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .record-data {
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .hash {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #ecf0f1;
+            word-break: break-all;
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+
+        .verification-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
+
+        .verified {
+            background: #27ae60;
+            color: white;
+        }
+
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        body.dark-mode .stat-card {
+            background: #2c3e50;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4a90e2;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .settings-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .settings-toggle:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        body.dark-mode .settings-toggle {
+            background: #ffd700;
+            color: #333;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 999;
+            display: none;
+            min-width: 200px;
+        }
+
+        body.dark-mode .settings-panel {
+            background: #2c3e50;
+            color: white;
+        }
+
+        body.dark-mode .settings-panel h3 {
+            color: #ffd700 !important;
+        }
+
+        .theme-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-option:hover {
+            background: #f0f0f0;
+        }
+
+        body.dark-mode .theme-option:hover {
+            background: #34495e;
+        }
+
+        .theme-option input {
+            margin-right: 10px;
+        }
+
+        .theme-option label {
+            cursor: pointer;
+            user-select: none;
+            width: 100%;
+            display: block;
+        }
+
+        .theme-option input[type="radio"] {
+            cursor: pointer;
+        }
+
+        .theme-option.active {
+            background: #4a90e2;
+            color: white;
+        }
+
+        body.dark-mode .theme-option.active {
+            background: #ffd700;
+            color: #333;
+        }
+
+        /* Ensure theme options are clearly clickable */
+        .theme-option:not(:hover) {
+            transition: all 0.3s ease;
+        }
+
+        .theme-option:hover {
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* User Authentication Styles */
+        .auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .auth-modal {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .auth-modal {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .auth-header h2 {
+            color: #4a90e2;
+            margin-bottom: 10px;
+        }
+
+        body.dark-mode .auth-header h2 {
+            color: #ffd700;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        body.dark-mode .form-group label {
+            color: #ecf0f1;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            color: #333;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        body.dark-mode .form-group input, 
+        body.dark-mode .form-group select, 
+        body.dark-mode .form-group textarea {
+            background: #34495e;
+            border: 2px solid #4a5568;
+            color: white;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        body.dark-mode .form-group input:focus, 
+        body.dark-mode .form-group select:focus, 
+        body.dark-mode .form-group textarea:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #357abd;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8e8;
+            color: #333;
+        }
+
+        body.dark-mode .btn-primary {
+            background: #34495e;
+            border: 2px solid #ffd700;
+        }
+
+        body.dark-mode .btn-primary:hover {
+            background: #ffd700;
+            color: #333;
+        }
+
+        body.dark-mode .btn-secondary {
+            background: #34495e;
+            color: #bdc3c7;
+        }
+
+        body.dark-mode .btn-secondary:hover {
+            background: #4a5568;
+            color: white;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 15px;
+            color: #666;
+        }
+
+        body.dark-mode .auth-switch {
+            color: #bdc3c7;
+        }
+
+        .auth-switch a {
+            color: #4a90e2;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        body.dark-mode .auth-switch a {
+            color: #ffd700;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        body.dark-mode .close-modal {
+            color: #bdc3c7;
+        }
+
+        /* User Navigation */
+        .user-nav {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #333;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .user-info {
+            background: rgba(44, 62, 80, 0.9);
+            color: white;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+
+        body.dark-mode .welcome-section {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .main-features {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        body.dark-mode .feature-card {
+            background: #2c3e50;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #4a90e2;
+        }
+
+        body.dark-mode .feature-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            border-color: #ffd700;
+        }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-right: 15px;
+            color: #4a90e2;
+        }
+
+        body.dark-mode .feature-icon {
+            color: #ffd700;
+        }
+
+        .feature-header h2 {
+            color: #333;
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        body.dark-mode .feature-header h2 {
+            color: white;
+        }
+
+        .feature-description {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        body.dark-mode .feature-description {
+            color: #bdc3c7;
+        }
+
+        .feature-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .action-btn:hover {
+            background: #357abd;
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .action-btn {
+            background: #34495e;
+            border: 2px solid #ffd700;
+        }
+
+        body.dark-mode .action-btn:hover {
+            background: #ffd700;
+            color: #333;
+        }
+
+        /* Personal Records Styles */
+        .personal-records {
+            display: none;
+        }
+
+        .record-form {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode .record-form {
+            background: #2c3e50;
+        }
+
+        .records-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .record-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #4a90e2;
+            transition: all 0.2s ease;
+        }
+
+        .record-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        body.dark-mode .record-item {
+            background: #2c3e50;
+            border-left: 4px solid #ffd700;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .record-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .record-date {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        body.dark-mode .record-date {
+            color: #bdc3c7;
+        }
+
+        /* Simple Overview Tabs */
+        .overview-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tab-button {
+            background: #f5f5f5;
+            border: none;
+            color: #666;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        body.dark-mode .tab-button {
+            background: #34495e;
+            color: #bdc3c7;
+        }
+
+        .tab-button:hover {
+            background: #e8e8e8;
+            color: #333;
+        }
+
+        body.dark-mode .tab-button:hover {
+            background: #4a5568;
+            color: white;
+        }
+
+        .tab-button.active {
+            background: #4a90e2;
+            color: white;
+        }
+
+        body.dark-mode .tab-button.active {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .tab-content {
+            margin-top: 20px;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Analytics Styles */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .analytics-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 4px solid #4a90e2;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .analytics-card {
+            background: #34495e;
+            border-left: 4px solid #ffd700;
+        }
+
+        .analytics-card h3 {
+            color: #4a90e2;
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .analytics-card h3 {
+            color: #ffd700;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e6ed;
+        }
+
+        body.dark-mode .stat-item {
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        body.dark-mode .stat-label {
+            color: #ecf0f1;
+        }
+
+        .stat-value {
+            color: #4a90e2;
+            font-weight: bold;
+        }
+
+        body.dark-mode .stat-value {
+            color: #ffd700;
+        }
+
+        /* Appointment Status Styles */
+        .appointment-item.past {
+            opacity: 0.7;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge.upcoming {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.past {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        body.dark-mode .status-badge.upcoming {
+            background: #27ae60;
+            color: white;
+        }
+
+        body.dark-mode .status-badge.past {
+            background: #95a5a6;
+            color: white;
+        }
+
+        /* Settings Section Styles */
+        .settings-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .settings-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .settings-tab-pane {
+            display: none;
+        }
+
+        .settings-tab-pane.active {
+            display: block;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .settings-card {
+            background: #2c3e50;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-card h3 {
+            color: #4a90e2;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        body.dark-mode .settings-card h3 {
+            color: #ffd700;
+        }
+
+        .setting-group {
+            margin-bottom: 25px;
+        }
+
+        .setting-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        body.dark-mode .setting-group label {
+            color: white;
+        }
+
+        .theme-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .theme-choice {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-choice:hover, .theme-choice.active {
+            border-color: #4a90e2;
+            background: #f8f9ff;
+        }
+
+        body.dark-mode .theme-choice {
+            border-color: #4a5568;
+            background: #34495e;
+        }
+
+        body.dark-mode .theme-choice:hover, body.dark-mode .theme-choice.active {
+            border-color: #ffd700;
+            background: #3d566e;
+        }
+
+        .theme-preview {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .light-preview {
+            background: linear-gradient(45deg, #ffffff, #f8f9fa);
+            border: 2px solid #dee2e6;
+        }
+
+        .dark-preview {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            border: 2px solid #4a5568;
+        }
+
+        .password-change-form {
+            display: grid;
+            gap: 15px;
+        }
+
+        .password-change-form input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .security-option, .privacy-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        body.dark-mode .security-option, body.dark-mode .privacy-option {
+            background: #34495e;
+        }
+
+        .location-input, .emergency-contact {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .data-management {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .danger-zone {
+            padding: 20px;
+            border: 2px solid #e74c3c;
+            border-radius: 10px;
+            background: #fdf2f2;
+        }
+
+        body.dark-mode .danger-zone {
+            background: #4a2828;
+            border-color: #c0392b;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .policy-section {
+            display: grid;
+            gap: 20px;
+        }
+
+        .policy-item {
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+
+        body.dark-mode .policy-item {
+            background: #34495e;
+            border-color: #4a5568;
+        }
+
+        .policy-item h4 {
+            margin: 0 0 10px 0;
+            color: #4a90e2;
+        }
+
+        body.dark-mode .policy-item h4 {
+            color: #ffd700;
+        }
+
+        .policy-item p {
+            margin: 0 0 15px 0;
+            color: #666;
+        }
+
+        body.dark-mode .policy-item p {
+            color: #bdc3c7;
+        }
+
+        /* Simple Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .main-features {
+                gap: 20px;
+            }
+            
+            .feature-card {
+                padding: 20px;
+            }
+            
+            .feature-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .overview-tabs {
+                gap: 5px;
+            }
+            
+            .tab-button {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .auth-modal {
+                width: 95%;
+                margin: 10px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Overlay -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-modal">
+            <button class="close-modal" onclick="closeAuthModal()">×</button>
+            
+            <!-- Login Form -->
+            <div id="loginForm">
+                <div class="auth-header">
+                    <h2>🔐 Welcome Back!</h2>
+                    <p>Sign in to access your personal medical records</p>
+                </div>
+                <form class="auth-form" onsubmit="loginUser(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <div class="auth-buttons">
+                        <button type="submit" class="btn-primary">Sign In</button>
+                    </div>
+                </form>
+                <div class="auth-switch">
+                    Don't have an account? <a onclick="showRegisterForm()">Register here</a>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" style="display: none;">
+                <div class="auth-header">
+                    <h2>🏥 Join Cell Block</h2>
+                    <p>Create your secure medical records account</p>
+                </div>
+                <form class="auth-form" onsubmit="registerUser(event)">
+                    <div class="form-group">
+                        <label for="registerName">Full Name</label>
+                        <input type="text" id="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input type="password" id="registerPassword" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerAge">Age</label>
+                        <input type="number" id="registerAge" min="1" max="120" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerBloodType">Blood Type</label>
+                        <select id="registerBloodType" required>
+                            <option value="">Select Blood Type</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <div class="auth-buttons">
+                        <button type="submit" class="btn-primary">Create Account</button>
+                    </div>
+                </form>
+                <div class="auth-switch">
+                    Already have an account? <a onclick="showLoginForm()">Sign in here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Navigation -->
+    <div class="user-nav" id="userNav">
+        <div class="user-info" id="userInfo">
+            👤 Welcome, <span id="currentUserName">User</span>
+        </div>
+        <button class="logout-btn" onclick="logoutUser()">Logout</button>
+    </div>
+
+
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Welcome Header (shown when not logged in) -->
+        <div id="welcomeHeader">
+            <header>
+                <div class="logo">🏥</div>
+                <h1>Cell Block</h1>
+                <p class="subtitle">Secure Personal Health Records on Blockchain</p>
+                <p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">💡 Sign in to access your personal medical records or create a new account</p>
+                <div style="margin-top: 20px;">
+                    <button onclick="showAuthModal('login')" class="btn-primary" style="margin-right: 10px;">Sign In</button>
+                    <button onclick="showAuthModal('register')" class="btn-secondary">Create Account</button>
+                </div>
+            </header>
+        </div>
+
+        <!-- User Dashboard (shown when logged in) -->
+        <div class="dashboard" id="userDashboard">
+            <div class="welcome-section">
+                <div class="logo">🏥</div>
+                <h1>Your Personal Health Dashboard</h1>
+                <p class="subtitle">Secure, Private, Blockchain-Protected</p>
+                <p>Welcome back, <strong id="dashboardUserName">User</strong>! Your medical records are secured with blockchain technology.</p>
+            </div>
+
+            <!-- Main Features Section -->
+            <div class="main-features">
+                <div class="feature-card primary" onclick="showPersonalRecords()">
+                    <div class="feature-header">
+                        <div class="feature-icon">🏥</div>
+                        <h2>My Health Records</h2>
+                    </div>
+                    <p class="feature-description">Complete medical record management with blockchain security</p>
+                    <div class="feature-actions">
+                        <button onclick="event.stopPropagation(); showPersonalRecords()" class="action-btn">📋 View Records</button>
+                        <button onclick="event.stopPropagation(); showAddRecord()" class="action-btn">➕ Add Record</button>
+                        <button onclick="event.stopPropagation(); showBlockchainView()" class="action-btn">🔗 Blockchain</button>
+                    </div>
+                </div>
+
+                <div class="feature-card primary" onclick="openBookingPage()">
+                    <div class="feature-header">
+                        <div class="feature-icon">📅</div>
+                        <h2>Book Appointments</h2>
+                    </div>
+                    <p class="feature-description">Schedule appointments with qualified medical professionals</p>
+                    <div class="feature-actions">
+                        <button onclick="event.stopPropagation(); openBookingPage()" class="action-btn">🩺 Find Doctors</button>
+                        <button onclick="event.stopPropagation(); openBookingPage()" class="action-btn">👩‍⚕️ Find Nurses</button>
+                        <button onclick="event.stopPropagation(); openBookingPage()" class="action-btn">🔬 Technicians</button>
+                    </div>
+                </div>
+
+                <div class="feature-card primary" onclick="showMyRecordsOverview()">
+                    <div class="feature-header">
+                        <div class="feature-icon">📊</div>
+                        <h2>My Records Overview</h2>
+                    </div>
+                    <p class="feature-description">Comprehensive view of all your medical data and appointments</p>
+                    <div class="feature-actions">
+                        <button onclick="event.stopPropagation(); showPersonalRecords()" class="action-btn">📝 Medical History</button>
+                        <button onclick="event.stopPropagation(); showMyBookings()" class="action-btn">📅 Appointments</button>
+                        <button onclick="event.stopPropagation(); showProfile()" class="action-btn">👤 Profile</button>
+                    </div>
+                </div>
+
+                <div class="feature-card primary" onclick="showSettings()">
+                    <div class="feature-header">
+                        <div class="feature-icon">⚙️</div>
+                        <h2>Settings</h2>
+                    </div>
+                    <p class="feature-description">Customize your Cell Block experience and manage account settings</p>
+                    <div class="feature-actions">
+                        <button onclick="event.stopPropagation(); showSettings('theme')" class="action-btn">🎨 Theme</button>
+                        <button onclick="event.stopPropagation(); showSettings('security')" class="action-btn">🔒 Security</button>
+                        <button onclick="event.stopPropagation(); showSettings('privacy')" class="action-btn">🛡️ Privacy</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="statistics">
+                <div class="stat-card">
+                    <div class="stat-number" id="userTotalRecords">0</div>
+                    <div class="stat-label">My Records</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="userTotalBlocks">0</div>
+                    <div class="stat-label">Blockchain Blocks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="userVerifiedRecords">0</div>
+                    <div class="stat-label">Verified Records</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal Records Section -->
+        <div class="personal-records" id="personalRecordsSection">
+            <header style="text-align: center; margin-bottom: 30px;">
+                <h1>📋 My Medical Records</h1>
+                <p>Secure blockchain-protected health records</p>
+                <button onclick="showDashboard()" class="btn-secondary">← Back to Dashboard</button>
+            </header>
+
+            <div class="record-form" id="addRecordForm" style="display: none;">
+                <h2>➕ Add New Medical Record</h2>
+                <form onsubmit="addPersonalRecord(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="recordType">Record Type</label>
+                            <select id="recordType" required>
+                                <option value="">Select Type</option>
+                                <option value="Consultation">Doctor Consultation</option>
+                                <option value="Lab Test">Lab Test</option>
+                                <option value="Prescription">Prescription</option>
+                                <option value="Emergency">Emergency Visit</option>
+                                <option value="Surgery">Surgery</option>
+                                <option value="Imaging">Medical Imaging</option>
+                                <option value="Vaccination">Vaccination</option>
+                                <option value="Follow-up">Follow-up Visit</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="recordDate">Date</label>
+                            <input type="date" id="recordDate" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="recordTitle">Title/Summary</label>
+                        <input type="text" id="recordTitle" placeholder="e.g., Annual Checkup, Blood Test Results" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="recordDetails">Details</label>
+                        <textarea id="recordDetails" rows="4" placeholder="Describe the medical record details..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="recordProvider">Healthcare Provider</label>
+                        <input type="text" id="recordProvider" placeholder="e.g., Dr. Smith, City Hospital" required>
+                    </div>
+                    <div class="auth-buttons">
+                        <button type="submit" class="btn-primary">Add to Blockchain</button>
+                        <button type="button" class="btn-secondary" onclick="hideAddRecord()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="records-list" id="personalRecordsList">
+                <p style="text-align: center; color: #666; padding: 40px;">No medical records found. <a href="#" onclick="showAddRecord()">Add your first record</a></p>
+            </div>
+        </div>
+
+        <!-- Blockchain View Section -->
+        <div class="personal-records" id="blockchainSection">
+            <header style="text-align: center; margin-bottom: 30px;">
+                <h1>🔗 My Blockchain</h1>
+                <p>Cryptographically secured medical records</p>
+                <button onclick="showDashboard()" class="btn-secondary">← Back to Dashboard</button>
+            </header>
+
+            <div class="card">
+                <h2>Blockchain Verification</h2>
+                <div id="personalBlockchainContainer">
+                    <div class="loading">
+                        <p>Your personal blockchain will appear here after adding medical records.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="personal-records" id="profileSection">
+            <header style="text-align: center; margin-bottom: 30px;">
+                <h1>👤 My Profile</h1>
+                <p>Update your personal information</p>
+                <button onclick="showDashboard()" class="btn-secondary">← Back to Dashboard</button>
+            </header>
+
+            <div class="record-form">
+                <h2>Personal Information</h2>
+                <form onsubmit="updateProfile(event)">
+                    <div class="form-group">
+                        <label for="profileName">Full Name</label>
+                        <input type="text" id="profileName" required>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="profileAge">Age</label>
+                            <input type="number" id="profileAge" min="1" max="120" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileBloodType">Blood Type</label>
+                            <select id="profileBloodType" required>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="profileEmail">Email</label>
+                        <input type="email" id="profileEmail" readonly style="background: #f5f5f5;">
+                    </div>
+                    <div class="auth-buttons">
+                        <button type="submit" class="btn-primary">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="personal-records" id="settingsSection" style="display: none;">
+            <header style="text-align: center; margin-bottom: 30px;">
+                <h1>⚙️ Settings</h1>
+                <p>Customize your Cell Block experience and manage your account</p>
+                <button onclick="showUserDashboard()" class="btn-secondary">← Back to Dashboard</button>
+            </header>
+
+            <div class="settings-tabs">
+                <button class="tab-button active" onclick="showSettingsTab('theme')">🎨 Theme</button>
+                <button class="tab-button" onclick="showSettingsTab('security')">🔒 Security</button>
+                <button class="tab-button" onclick="showSettingsTab('privacy')">🛡️ Privacy</button>
+                <button class="tab-button" onclick="showSettingsTab('location')">📍 Location</button>
+                <button class="tab-button" onclick="showSettingsTab('policies')">📋 Policies</button>
+            </div>
+
+            <div class="settings-content">
+                <!-- Theme Settings Tab -->
+                <div id="themeTab" class="settings-tab-pane active">
+                    <div class="settings-card">
+                        <h3>🎨 Theme & Display</h3>
+                        
+                        <div class="setting-group">
+                            <label>Color Theme</label>
+                            <div class="theme-options">
+                                <div class="theme-choice" onclick="setTheme('light')">
+                                    <div class="theme-preview light-preview"></div>
+                                    <span>☀️ Light Mode</span>
+                                    <input type="radio" name="themeChoice" id="lightChoice" checked>
+                                </div>
+                                <div class="theme-choice" onclick="setTheme('dark')">
+                                    <div class="theme-preview dark-preview"></div>
+                                    <span>🌙 Dark Mode</span>
+                                    <input type="radio" name="themeChoice" id="darkChoice">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Settings Tab -->
+                <div id="securityTab" class="settings-tab-pane">
+                    <div class="settings-card">
+                        <h3>🔒 Security Settings</h3>
+                        
+                        <div class="setting-group">
+                            <label>Change Password</label>
+                            <div class="password-change-form">
+                                <input type="password" id="currentPassword" placeholder="Current Password">
+                                <input type="password" id="newPassword" placeholder="New Password">
+                                <input type="password" id="confirmPassword" placeholder="Confirm New Password">
+                                <button onclick="changePassword()" class="btn-primary">Update Password</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Two-Factor Authentication</label>
+                            <div class="security-option">
+                                <input type="checkbox" id="twoFactorAuth" onchange="toggleTwoFactor(this.checked)">
+                                <span>Enable 2FA for enhanced security</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacy Settings Tab -->
+                <div id="privacyTab" class="settings-tab-pane">
+                    <div class="settings-card">
+                        <h3>🛡️ Privacy & Data</h3>
+                        
+                        <div class="setting-group">
+                            <label>Data Export & Download</label>
+                            <div class="data-management">
+                                <button onclick="downloadAllData()" class="btn-primary">📥 Download All My Data</button>
+                                <button onclick="scheduleDataExport()" class="btn-secondary">📅 Schedule Export</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Account Deletion</label>
+                            <div class="danger-zone">
+                                <p>⚠️ This action cannot be undone</p>
+                                <button onclick="requestAccountDeletion()" class="btn-danger">Delete Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Settings Tab -->
+                <div id="locationTab" class="settings-tab-pane">
+                    <div class="settings-card">
+                        <h3>📍 Location Settings</h3>
+                        
+                        <div class="setting-group">
+                            <label>Primary Location</label>
+                            <div class="location-input">
+                                <input type="text" id="primaryAddress" placeholder="Enter your address">
+                                <button onclick="detectLocation()" class="btn-secondary">📍 Use Current</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Emergency Contact</label>
+                            <div class="emergency-contact">
+                                <input type="text" id="emergencyName" placeholder="Contact Name">
+                                <input type="tel" id="emergencyPhone" placeholder="Phone Number">
+                                <button onclick="saveEmergencyContact()" class="btn-primary">Save Contact</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Policies Settings Tab -->
+                <div id="policiesTab" class="settings-tab-pane">
+                    <div class="settings-card">
+                        <h3>📋 Policies & Legal</h3>
+                        
+                        <div class="policy-section">
+                            <div class="policy-item">
+                                <h4>📄 Privacy Policy</h4>
+                                <p>Learn how we protect your health data</p>
+                                <button onclick="viewPolicy('privacy')" class="btn-secondary">View Policy</button>
+                            </div>
+                            
+                            <div class="policy-item">
+                                <h4>📜 Terms of Service</h4>
+                                <p>Terms and conditions for using Cell Block</p>
+                                <button onclick="viewPolicy('terms')" class="btn-secondary">View Terms</button>
+                            </div>
+
+                            <div class="policy-item">
+                                <h4>🏥 HIPAA Compliance</h4>
+                                <p>Health information protection standards</p>
+                                <button onclick="viewPolicy('hipaa')" class="btn-secondary">View HIPAA Info</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // User management and blockchain simulation data
+        let blockchain = [];
+        let patients = {};
+        let currentPatientId = null;
+        let currentUser = null;
+        let users = {}; // Will store all registered users
+        let userBlockchains = {}; // Separate blockchain for each user
+
+        // Load existing data from localStorage on page load
+        function loadStoredData() {
+            const storedUsers = localStorage.getItem('cellBlockUsers');
+            if (storedUsers) {
+                users = JSON.parse(storedUsers);
+                console.log('Loaded users:', Object.keys(users).length);
+            }
+            
+            const storedBlockchains = localStorage.getItem('cellBlockBlockchains');
+            if (storedBlockchains) {
+                userBlockchains = JSON.parse(storedBlockchains);
+                console.log('Loaded blockchains:', Object.keys(userBlockchains).length);
+            }
+        }
+
+        // Blockchain class simulation
+        class Block {
+            constructor(index, data, previousHash) {
+                this.index = index;
+                this.timestamp = new Date().toISOString();
+                this.data = data;
+                this.previousHash = previousHash;
+                this.hash = this.calculateHash();
+                this.verified = true;
+            }
+
+            calculateHash() {
+                const crypto = {
+                    createHash: function() {
+                        return {
+                            update: function() { return this; },
+                            digest: function() {
+                                return Math.random().toString(36).substring(2, 15) + 
+                                       Math.random().toString(36).substring(2, 15) +
+                                       Math.random().toString(36).substring(2, 15);
+                            }
+                        };
+                    }
+                };
+                return crypto.createHash().update().digest();
+            }
+        }
+
+        // Legacy functions removed - now using user-specific personal records system
+
+        function displayMessage(message, type = 'success') {
+            // Remove any existing messages first
+            const existingMessages = document.querySelectorAll('.toast-message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            // Create a temporary message element
+            const messageEl = document.createElement('div');
+            messageEl.className = 'toast-message';
+            
+            let backgroundColor = '#27ae60'; // success (green)
+            if (type === 'error') backgroundColor = '#e74c3c'; // red
+            if (type === 'warning') backgroundColor = '#f39c12'; // orange
+            if (type === 'info') backgroundColor = '#3498db'; // blue
+            
+            messageEl.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${backgroundColor};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                z-index: 1001;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                font-weight: 500;
+                max-width: 300px;
+                word-wrap: break-word;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            messageEl.innerHTML = message;
+            document.body.appendChild(messageEl);
+
+            // Add slideIn animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            if (!document.querySelector('style[data-toast]')) {
+                style.setAttribute('data-toast', 'true');
+                document.head.appendChild(style);
+            }
+
+            setTimeout(() => {
+                if (messageEl && messageEl.parentNode) {
+                    messageEl.style.transform = 'translateX(100%)';
+                    messageEl.style.opacity = '0';
+                    setTimeout(() => {
+                        if (messageEl && messageEl.parentNode) {
+                            document.body.removeChild(messageEl);
+                        }
+                    }, 300);
+                }
+            }, 4000);
+        }
+
+        // Theme switching functionality
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            const isVisible = panel.style.display === 'block' || window.getComputedStyle(panel).display === 'block';
+            
+            console.log('Toggle settings called, current visible:', isVisible);
+            
+            if (isVisible) {
+                panel.style.display = 'none';
+                console.log('Settings panel hidden');
+            } else {
+                panel.style.display = 'block';
+                console.log('Settings panel shown');
+                
+                // Ensure proper theme option highlighting when panel opens
+                const currentTheme = localStorage.getItem('cellBlockTheme') || 'light';
+                const lightOption = document.getElementById('lightThemeOption');
+                const darkOption = document.getElementById('darkThemeOption');
+                
+                if (currentTheme === 'dark') {
+                    if (darkOption) {
+                        darkOption.style.backgroundColor = '#ffd700';
+                        darkOption.style.color = '#333';
+                    }
+                    if (lightOption) {
+                        lightOption.style.backgroundColor = '';
+                        lightOption.style.color = '';
+                    }
+                } else {
+                    if (lightOption) {
+                        lightOption.style.backgroundColor = '#4a90e2';
+                        lightOption.style.color = 'white';
+                    }
+                    if (darkOption) {
+                        darkOption.style.backgroundColor = '';
+                        darkOption.style.color = '';
+                    }
+                }
+            }
+        }
+
+        function setTheme(theme) {
+            const body = document.body;
+            const lightRadio = document.getElementById('lightTheme');
+            const darkRadio = document.getElementById('darkTheme');
+            const lightOption = document.getElementById('lightThemeOption');
+            const darkOption = document.getElementById('darkThemeOption');
+            
+            console.log('Setting theme to:', theme);
+            
+            // Remove existing theme classes first
+            body.classList.remove('dark-mode');
+            
+            if (theme === 'dark') {
+                // Apply dark theme
+                body.classList.add('dark-mode');
+                if (darkRadio) darkRadio.checked = true;
+                if (lightRadio) lightRadio.checked = false;
+                if (darkOption) {
+                    darkOption.classList.add('active');
+                    darkOption.style.backgroundColor = '#ffd700';
+                    darkOption.style.color = '#333';
+                }
+                if (lightOption) {
+                    lightOption.classList.remove('active');
+                    lightOption.style.backgroundColor = '';
+                    lightOption.style.color = '';
+                }
+                localStorage.setItem('cellBlockTheme', 'dark');
+                console.log('Dark theme applied successfully');
+                displayMessage('🌙 Dark mode activated!');
+            } else {
+                // Apply light theme (default)
+                body.classList.remove('dark-mode');
+                if (lightRadio) lightRadio.checked = true;
+                if (darkRadio) darkRadio.checked = false;
+                if (lightOption) {
+                    lightOption.classList.add('active');
+                    lightOption.style.backgroundColor = '#4a90e2';
+                    lightOption.style.color = 'white';
+                }
+                if (darkOption) {
+                    darkOption.classList.remove('active');
+                    darkOption.style.backgroundColor = '';
+                    darkOption.style.color = '';
+                }
+                localStorage.setItem('cellBlockTheme', 'light');
+                console.log('Light theme applied successfully');
+                displayMessage('☀️ Light mode activated!');
+            }
+            
+            // Hide settings panel after selection with delay
+            setTimeout(() => {
+                const panel = document.getElementById('settingsPanel');
+                if (panel) {
+                    panel.style.display = 'none';
+                    console.log('Settings panel auto-closed after theme change');
+                }
+            }, 800);
+        }
+
+        // Load saved theme on page load
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('cellBlockTheme') || 'light';
+            console.log('Loading saved theme:', savedTheme);
+            
+            // Ensure we always have a valid theme
+            const validTheme = (savedTheme === 'dark') ? 'dark' : 'light';
+            setTheme(validTheme);
+        }
+
+        // User Authentication Functions
+        function showAuthModal(type = 'login') {
+            const overlay = document.getElementById('authOverlay');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            if (type === 'register') {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            } else {
+                registerForm.style.display = 'none';
+                loginForm.style.display = 'block';
+            }
+            
+            overlay.style.display = 'flex';
+            console.log('Auth modal opened:', type);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authOverlay').style.display = 'none';
+            // Clear form fields
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('registerName').value = '';
+            document.getElementById('registerEmail').value = '';
+            document.getElementById('registerPassword').value = '';
+            document.getElementById('registerAge').value = '';
+            document.getElementById('registerBloodType').value = '';
+        }
+
+        function showLoginForm() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+
+        function showRegisterForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        function registerUser(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+            const password = document.getElementById('registerPassword').value;
+            const age = parseInt(document.getElementById('registerAge').value);
+            const bloodType = document.getElementById('registerBloodType').value;
+            
+            console.log('Registering user:', email);
+            
+            // Load existing users
+            const storedUsers = localStorage.getItem('cellBlockUsers');
+            const existingUsers = storedUsers ? JSON.parse(storedUsers) : {};
+            
+            // Check if user already exists
+            if (existingUsers[email]) {
+                displayMessage('❌ An account with this email already exists!', 'error');
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                name: name,
+                email: email,
+                password: password, // In real app, this would be hashed
+                age: age,
+                bloodType: bloodType,
+                registeredAt: new Date().toISOString(),
+                records: []
+            };
+            
+            // Save user
+            existingUsers[email] = newUser;
+            localStorage.setItem('cellBlockUsers', JSON.stringify(existingUsers));
+            
+            // Initialize user's blockchain
+            userBlockchains[email] = [];
+            const genesisBlock = new Block(0, { 
+                type: 'Genesis', 
+                message: `${name}'s Personal Medical Blockchain`,
+                userId: email 
+            }, '0');
+            userBlockchains[email].push(genesisBlock);
+            
+            // Save blockchains
+            localStorage.setItem('cellBlockBlockchains', JSON.stringify(userBlockchains));
+            
+            displayMessage(`🎉 Welcome to Cell Block, ${name}! Your account has been created successfully.`, 'success');
+            closeAuthModal();
+            
+            // Auto-login the new user
+            setTimeout(() => {
+                loginUser(null, email, password);
+            }, 1000);
+        }
+
+        function loginUser(event, email = null, password = null) {
+            if (event) event.preventDefault();
+            
+            const userEmail = email || document.getElementById('loginEmail').value.trim().toLowerCase();
+            const userPassword = password || document.getElementById('loginPassword').value;
+            
+            console.log('Logging in user:', userEmail);
+            
+            // Load users
+            const storedUsers = localStorage.getItem('cellBlockUsers');
+            const users = storedUsers ? JSON.parse(storedUsers) : {};
+            
+            // Validate credentials
+            if (!users[userEmail]) {
+                displayMessage('❌ No account found with this email address.', 'error');
+                return;
+            }
+            
+            if (users[userEmail].password !== userPassword) {
+                displayMessage('❌ Incorrect password. Please try again.', 'error');
+                return;
+            }
+            
+            // Set current user
+            currentUser = users[userEmail];
+            localStorage.setItem('cellBlockCurrentUser', JSON.stringify(currentUser));
+            
+            // Load user's blockchain
+            const storedBlockchains = localStorage.getItem('cellBlockBlockchains');
+            userBlockchains = storedBlockchains ? JSON.parse(storedBlockchains) : {};
+            
+            if (!userBlockchains[userEmail]) {
+                // Create blockchain if it doesn't exist
+                userBlockchains[userEmail] = [];
+                const genesisBlock = new Block(0, { 
+                    type: 'Genesis', 
+                    message: `${currentUser.name}'s Personal Medical Blockchain`,
+                    userId: userEmail 
+                }, '0');
+                userBlockchains[userEmail].push(genesisBlock);
+                localStorage.setItem('cellBlockBlockchains', JSON.stringify(userBlockchains));
+            }
+            
+            // Update UI
+            showUserDashboard();
+            closeAuthModal();
+            
+            displayMessage(`👋 Welcome back, ${currentUser.name}!`, 'success');
+            console.log('User logged in successfully');
+        }
+
+        function logoutUser() {
+            console.log('Logging out user');
+            currentUser = null;
+            localStorage.removeItem('cellBlockCurrentUser');
+            
+            // Hide user sections
+            document.getElementById('userDashboard').style.display = 'none';
+            document.getElementById('personalRecordsSection').style.display = 'none';
+            document.getElementById('blockchainSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('userNav').style.display = 'none';
+            
+            // Show welcome header
+            document.getElementById('welcomeHeader').style.display = 'block';
+            
+            displayMessage('👋 You have been logged out successfully.', 'info');
+        }
+
+        function showUserDashboard() {
+            // Hide all sections
+            document.getElementById('welcomeHeader').style.display = 'none';
+            document.getElementById('personalRecordsSection').style.display = 'none';
+            document.getElementById('blockchainSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            
+            // Show dashboard
+            document.getElementById('userDashboard').style.display = 'block';
+            document.getElementById('userNav').style.display = 'flex';
+            
+            // Update user info
+            document.getElementById('currentUserName').textContent = currentUser.name;
+            document.getElementById('dashboardUserName').textContent = currentUser.name;
+            
+            // Update statistics
+            updateUserStatistics();
+        }
+
+        // Personal Records Functions
+        function showPersonalRecords() {
+            document.getElementById('userDashboard').style.display = 'none';
+            document.getElementById('personalRecordsSection').style.display = 'block';
+            document.getElementById('addRecordForm').style.display = 'none';
+            
+            loadPersonalRecords();
+        }
+
+        function showAddRecord() {
+            if (document.getElementById('personalRecordsSection').style.display !== 'block') {
+                showPersonalRecords();
+            }
+            
+            document.getElementById('addRecordForm').style.display = 'block';
+            
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('recordDate').value = today;
+            
+            // Scroll to form
+            document.getElementById('addRecordForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hideAddRecord() {
+            document.getElementById('addRecordForm').style.display = 'none';
+        }
+
+        function addPersonalRecord(event) {
+            event.preventDefault();
+            
+            const recordData = {
+                type: document.getElementById('recordType').value,
+                date: document.getElementById('recordDate').value,
+                title: document.getElementById('recordTitle').value,
+                details: document.getElementById('recordDetails').value,
+                provider: document.getElementById('recordProvider').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            console.log('Adding personal record:', recordData);
+            
+            // Add to user's records
+            currentUser.records.push(recordData);
+            
+            // Add to blockchain
+            const userEmail = currentUser.email;
+            const blockData = {
+                userId: userEmail,
+                userName: currentUser.name,
+                recordType: recordData.type,
+                recordData: recordData,
+                timestamp: recordData.date
+            };
+            
+            const previousHash = userBlockchains[userEmail][userBlockchains[userEmail].length - 1].hash;
+            const newBlock = new Block(userBlockchains[userEmail].length, blockData, previousHash);
+            userBlockchains[userEmail].push(newBlock);
+            
+            // Save to localStorage
+            const storedUsers = JSON.parse(localStorage.getItem('cellBlockUsers'));
+            storedUsers[userEmail] = currentUser;
+            localStorage.setItem('cellBlockUsers', JSON.stringify(storedUsers));
+            localStorage.setItem('cellBlockBlockchains', JSON.stringify(userBlockchains));
+            localStorage.setItem('cellBlockCurrentUser', JSON.stringify(currentUser));
+            
+            // Clear form
+            document.getElementById('recordType').value = '';
+            document.getElementById('recordDate').value = '';
+            document.getElementById('recordTitle').value = '';
+            document.getElementById('recordDetails').value = '';
+            document.getElementById('recordProvider').value = '';
+            
+            // Refresh display
+            loadPersonalRecords();
+            hideAddRecord();
+            
+            displayMessage('✅ Medical record added to your blockchain successfully!', 'success');
+        }
+
+        function loadPersonalRecords() {
+            const recordsList = document.getElementById('personalRecordsList');
+            
+            if (!currentUser.records || currentUser.records.length === 0) {
+                recordsList.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No medical records found. <a href="#" onclick="showAddRecord()">Add your first record</a></p>';
+                return;
+            }
+            
+            // Sort records by date (newest first)
+            const sortedRecords = currentUser.records.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            let html = '';
+            sortedRecords.forEach((record, index) => {
+                html += `
+                    <div class="record-item">
+                        <div class="record-header">
+                            <h3>${record.title}</h3>
+                            <span class="record-date">${new Date(record.date).toLocaleDateString()}</span>
+                        </div>
+                        <p><strong>Type:</strong> ${record.type}</p>
+                        <p><strong>Provider:</strong> ${record.provider}</p>
+                        <p><strong>Details:</strong> ${record.details}</p>
+                    </div>
+                `;
+            });
+            
+            recordsList.innerHTML = html;
+        }
+
+        function showBlockchainView() {
+            document.getElementById('userDashboard').style.display = 'none';
+            document.getElementById('blockchainSection').style.display = 'block';
+            
+            displayPersonalBlockchain();
+        }
+
+        function displayPersonalBlockchain() {
+            const container = document.getElementById('personalBlockchainContainer');
+            const userEmail = currentUser.email;
+            const userBlocks = userBlockchains[userEmail] || [];
+            
+            if (userBlocks.length <= 1) {
+                container.innerHTML = `
+                    <div class="loading">
+                        <p>Your personal blockchain will appear here after adding medical records.</p>
+                        <button onclick="showAddRecord()" class="btn-primary" style="margin-top: 15px;">Add Your First Record</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            userBlocks.forEach(block => {
+                const isGenesis = block.index === 0;
+                html += `
+                    <div class="block">
+                        <div class="block-header">
+                            <span class="block-id">Block #${block.index}</span>
+                            <span class="timestamp">${new Date(block.timestamp).toLocaleString()}</span>
+                        </div>
+                        ${isGenesis ? 
+                            `<div class="record-data">
+                                <strong>Genesis Block</strong><br>
+                                <em>${block.data.message}</em>
+                            </div>` :
+                            `<div class="record-data">
+                                <strong>Type:</strong> ${block.data.recordType}<br>
+                                <strong>Title:</strong> ${block.data.recordData.title}<br>
+                                <strong>Provider:</strong> ${block.data.recordData.provider}<br>
+                                <strong>Date:</strong> ${new Date(block.data.recordData.date).toLocaleDateString()}
+                            </div>`
+                        }
+                        <div class="hash">Hash: ${block.hash}</div>
+                        <div class="hash">Previous Hash: ${block.previousHash}</div>
+                        <span class="verification-status verified">✓ Verified & Secured</span>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function showProfile() {
+            document.getElementById('userDashboard').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'block';
+            
+            // Pre-fill form with current user data
+            document.getElementById('profileName').value = currentUser.name;
+            document.getElementById('profileAge').value = currentUser.age;
+            document.getElementById('profileBloodType').value = currentUser.bloodType;
+            document.getElementById('profileEmail').value = currentUser.email;
+        }
+
+        function updateProfile(event) {
+            event.preventDefault();
+            
+            const newName = document.getElementById('profileName').value.trim();
+            const newAge = parseInt(document.getElementById('profileAge').value);
+            const newBloodType = document.getElementById('profileBloodType').value;
+            
+            // Update current user
+            currentUser.name = newName;
+            currentUser.age = newAge;
+            currentUser.bloodType = newBloodType;
+            
+            // Save to localStorage
+            const storedUsers = JSON.parse(localStorage.getItem('cellBlockUsers'));
+            storedUsers[currentUser.email] = currentUser;
+            localStorage.setItem('cellBlockUsers', JSON.stringify(storedUsers));
+            localStorage.setItem('cellBlockCurrentUser', JSON.stringify(currentUser));
+            
+            // Update UI
+            document.getElementById('currentUserName').textContent = currentUser.name;
+            document.getElementById('dashboardUserName').textContent = currentUser.name;
+            
+            displayMessage('✅ Profile updated successfully!', 'success');
+        }
+
+        function showDashboard() {
+            showUserDashboard();
+        }
+
+        function openBookingPage() {
+            console.log('Opening booking page...');
+            window.location.href = 'booking.html';
+        }
+
+        function showMyRecordsOverview() {
+            // Hide all sections
+            document.getElementById('userDashboard').style.display = 'none';
+            document.getElementById('personalRecordsSection').style.display = 'none';
+            document.getElementById('blockchainSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            
+            // Show or create records overview section
+            let overviewSection = document.getElementById('recordsOverviewSection');
+            if (!overviewSection) {
+                createRecordsOverviewSection();
+                overviewSection = document.getElementById('recordsOverviewSection');
+            }
+            
+            overviewSection.style.display = 'block';
+            loadRecordsOverview();
+        }
+
+        function createRecordsOverviewSection() {
+            const container = document.querySelector('.container');
+            const overviewHTML = `
+                <div class="personal-records" id="recordsOverviewSection" style="display: none;">
+                    <header style="text-align: center; margin-bottom: 30px;">
+                        <h1>📊 My Complete Records Overview</h1>
+                        <p>Comprehensive view of all your medical data, appointments, and blockchain records</p>
+                        <button onclick="showUserDashboard()" class="btn-secondary">← Back to Dashboard</button>
+                    </header>
+
+                    <div class="overview-tabs">
+                        <button class="tab-button active" onclick="showOverviewTab('medical')">🏥 Medical Records</button>
+                        <button class="tab-button" onclick="showOverviewTab('appointments')">📅 Appointments</button>
+                        <button class="tab-button" onclick="showOverviewTab('blockchain')">🔗 Blockchain</button>
+                        <button class="tab-button" onclick="showOverviewTab('analytics')">📈 Analytics</button>
+                    </div>
+
+                    <div class="tab-content">
+                        <div id="medicalTab" class="tab-pane active">
+                            <div class="record-form">
+                                <h2>📋 My Medical Records</h2>
+                                <div style="margin-bottom: 20px;">
+                                    <button onclick="showAddRecord()" class="btn-primary">➕ Add New Record</button>
+                                    <button onclick="exportRecords()" class="btn-secondary">📤 Export Records</button>
+                                </div>
+                                <div id="overviewRecordsList">
+                                    <p style="text-align: center; color: #666; padding: 40px;">Loading medical records...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="appointmentsTab" class="tab-pane">
+                            <div class="record-form">
+                                <h2>📅 My Appointments</h2>
+                                <div style="margin-bottom: 20px;">
+                                    <button onclick="openBookingPage()" class="btn-primary">📅 Book New Appointment</button>
+                                    <button onclick="refreshAppointments()" class="btn-secondary">🔄 Refresh</button>
+                                </div>
+                                <div id="appointmentsList">
+                                    <p style="text-align: center; color: #666; padding: 40px;">Loading appointments...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="blockchainTab" class="tab-pane">
+                            <div class="record-form">
+                                <h2>🔗 My Personal Blockchain</h2>
+                                <div style="margin-bottom: 20px;">
+                                    <button onclick="verifyBlockchain()" class="btn-primary">✅ Verify Integrity</button>
+                                    <button onclick="downloadBlockchain()" class="btn-secondary">💾 Download Chain</button>
+                                </div>
+                                <div id="overviewBlockchainContainer">
+                                    <p style="text-align: center; color: #666; padding: 40px;">Loading blockchain...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="analyticsTab" class="tab-pane">
+                            <div class="record-form">
+                                <h2>📈 Health Analytics</h2>
+                                <div class="analytics-grid">
+                                    <div class="analytics-card">
+                                        <h3>📊 Record Summary</h3>
+                                        <div id="recordStats">
+                                            <div class="stat-item">
+                                                <span class="stat-label">Total Records:</span>
+                                                <span class="stat-value" id="totalRecordsCount">0</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="stat-label">Last Record:</span>
+                                                <span class="stat-value" id="lastRecordDate">N/A</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="stat-label">Most Common Type:</span>
+                                                <span class="stat-value" id="commonRecordType">N/A</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="analytics-card">
+                                        <h3>📅 Appointment Stats</h3>
+                                        <div id="appointmentStats">
+                                            <div class="stat-item">
+                                                <span class="stat-label">Total Appointments:</span>
+                                                <span class="stat-value" id="totalAppointmentsCount">0</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="stat-label">Next Appointment:</span>
+                                                <span class="stat-value" id="nextAppointmentDate">N/A</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="stat-label">Favorite Professional:</span>
+                                                <span class="stat-value" id="favoriteProfessional">N/A</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', overviewHTML);
+        }
+
+        function showOverviewTab(tabName) {
+            // Hide all tab panes
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load tab content
+            loadTabContent(tabName);
+        }
+
+        function loadTabContent(tabName) {
+            switch (tabName) {
+                case 'medical':
+                    loadOverviewMedicalRecords();
+                    break;
+                case 'appointments':
+                    loadOverviewAppointments();
+                    break;
+                case 'blockchain':
+                    displayOverviewBlockchain();
+                    break;
+                case 'analytics':
+                    loadAnalytics();
+                    break;
+            }
+        }
+
+        function loadRecordsOverview() {
+            // Load the medical tab by default
+            loadOverviewMedicalRecords();
+        }
+
+        function loadOverviewMedicalRecords() {
+            const recordsList = document.getElementById('overviewRecordsList');
+            
+            if (!currentUser.records || currentUser.records.length === 0) {
+                recordsList.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No medical records found. <a href="#" onclick="showAddRecord()">Add your first record</a></p>';
+                return;
+            }
+            
+            const sortedRecords = currentUser.records.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            let html = '';
+            sortedRecords.forEach((record, index) => {
+                html += `
+                    <div class="record-item">
+                        <div class="record-header">
+                            <h3>${record.title}</h3>
+                            <span class="record-date">${new Date(record.date).toLocaleDateString()}</span>
+                        </div>
+                        <p><strong>Type:</strong> ${record.type}</p>
+                        <p><strong>Provider:</strong> ${record.provider}</p>
+                        <p><strong>Details:</strong> ${record.details}</p>
+                        <div style="margin-top: 10px;">
+                            <button onclick="editRecord(${index})" class="action-btn" style="background: #f39c12;">✏️ Edit</button>
+                            <button onclick="deleteRecord(${index})" class="action-btn" style="background: #e74c3c;">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            recordsList.innerHTML = html;
+        }
+
+        function loadOverviewAppointments() {
+            const appointmentsList = document.getElementById('appointmentsList');
+            const bookings = JSON.parse(localStorage.getItem('cellBlockBookings') || '[]');
+            const userBookings = bookings.filter(booking => booking.userId === currentUser.email);
+            
+            if (userBookings.length === 0) {
+                appointmentsList.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No appointments found. <a href="#" onclick="openBookingPage()">Book your first appointment</a></p>';
+                return;
+            }
+            
+            let html = '';
+            userBookings.forEach((booking, index) => {
+                const appointmentDate = new Date(booking.date + ' ' + booking.time);
+                const isPast = appointmentDate < new Date();
+                const statusClass = isPast ? 'past' : 'upcoming';
+                
+                html += `
+                    <div class="record-item appointment-item ${statusClass}">
+                        <div class="record-header">
+                            <h3>${booking.professionalName}</h3>
+                            <span class="record-date">${new Date(booking.date).toLocaleDateString()} at ${booking.time}</span>
+                        </div>
+                        <p><strong>Type:</strong> ${booking.type}</p>
+                        <p><strong>Booking ID:</strong> ${booking.bookingId}</p>
+                        <p><strong>Phone:</strong> ${booking.phone}</p>
+                        <p><strong>Symptoms/Reason:</strong> ${booking.symptoms}</p>
+                        <p><strong>Status:</strong> <span class="status-badge ${statusClass}">${isPast ? 'Completed' : 'Upcoming'}</span></p>
+                        <div style="margin-top: 10px;">
+                            ${!isPast ? `<button onclick="rescheduleAppointment('${booking.bookingId}')" class="action-btn" style="background: #f39c12;">📅 Reschedule</button>` : ''}
+                            <button onclick="cancelAppointment('${booking.bookingId}')" class="action-btn" style="background: #e74c3c;">❌ Cancel</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            appointmentsList.innerHTML = html;
+        }
+
+        function displayOverviewBlockchain() {
+            const container = document.getElementById('overviewBlockchainContainer');
+            const userEmail = currentUser.email;
+            const userBlocks = userBlockchains[userEmail] || [];
+            
+            if (userBlocks.length <= 1) {
+                container.innerHTML = `
+                    <div class="loading">
+                        <p>Your personal blockchain will appear here after adding medical records.</p>
+                        <button onclick="showAddRecord()" class="btn-primary" style="margin-top: 15px;">Add Your First Record</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            userBlocks.forEach(block => {
+                const isGenesis = block.index === 0;
+                html += `
+                    <div class="block">
+                        <div class="block-header">
+                            <span class="block-id">Block #${block.index}</span>
+                            <span class="timestamp">${new Date(block.timestamp).toLocaleString()}</span>
+                        </div>
+                        ${isGenesis ? 
+                            `<div class="record-data">
+                                <strong>Genesis Block</strong><br>
+                                <em>${block.data.message}</em>
+                            </div>` :
+                            `<div class="record-data">
+                                <strong>Type:</strong> ${block.data.recordType}<br>
+                                <strong>Title:</strong> ${block.data.recordData.title}<br>
+                                <strong>Provider:</strong> ${block.data.recordData.provider}<br>
+                                <strong>Date:</strong> ${new Date(block.data.recordData.date).toLocaleDateString()}
+                            </div>`
+                        }
+                        <div class="hash">Hash: ${block.hash}</div>
+                        <div class="hash">Previous Hash: ${block.previousHash}</div>
+                        <span class="verification-status verified">✓ Verified & Secured</span>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function loadAnalytics() {
+            const records = currentUser.records || [];
+            const bookings = JSON.parse(localStorage.getItem('cellBlockBookings') || '[]');
+            const userBookings = bookings.filter(booking => booking.userId === currentUser.email);
+            
+            // Update record stats
+            document.getElementById('totalRecordsCount').textContent = records.length;
+            document.getElementById('lastRecordDate').textContent = records.length > 0 ? 
+                new Date(records[records.length - 1].date).toLocaleDateString() : 'N/A';
+            
+            // Find most common record type
+            if (records.length > 0) {
+                const typeCounts = {};
+                records.forEach(record => {
+                    typeCounts[record.type] = (typeCounts[record.type] || 0) + 1;
+                });
+                const mostCommon = Object.keys(typeCounts).reduce((a, b) => typeCounts[a] > typeCounts[b] ? a : b);
+                document.getElementById('commonRecordType').textContent = mostCommon;
+            }
+            
+            // Update appointment stats
+            document.getElementById('totalAppointmentsCount').textContent = userBookings.length;
+            
+            // Find next appointment
+            const futureBookings = userBookings.filter(booking => new Date(booking.date) >= new Date());
+            if (futureBookings.length > 0) {
+                const nextBooking = futureBookings.sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+                document.getElementById('nextAppointmentDate').textContent = 
+                    `${new Date(nextBooking.date).toLocaleDateString()} with ${nextBooking.professionalName}`;
+            }
+            
+            // Find favorite professional
+            if (userBookings.length > 0) {
+                const professionalCounts = {};
+                userBookings.forEach(booking => {
+                    professionalCounts[booking.professionalName] = (professionalCounts[booking.professionalName] || 0) + 1;
+                });
+                const favorite = Object.keys(professionalCounts).reduce((a, b) => 
+                    professionalCounts[a] > professionalCounts[b] ? a : b);
+                document.getElementById('favoriteProfessional').textContent = favorite;
+            }
+        }
+
+        function showMyBookings() {
+            showMyRecordsOverview();
+            // Switch to appointments tab
+            setTimeout(() => {
+                showOverviewTab('appointments');
+            }, 100);
+        }
+
+        // Utility functions for record management
+        function exportRecords() {
+            if (!currentUser.records || currentUser.records.length === 0) {
+                displayMessage('📄 No records to export.', 'info');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(currentUser.records, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `${currentUser.name}_medical_records_${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            displayMessage('📤 Medical records exported successfully!', 'success');
+        }
+
+        function verifyBlockchain() {
+            const userEmail = currentUser.email;
+            const userBlocks = userBlockchains[userEmail] || [];
+            
+            if (userBlocks.length <= 1) {
+                displayMessage('⚠️ No blockchain data to verify.', 'warning');
+                return;
+            }
+            
+            let isValid = true;
+            for (let i = 1; i < userBlocks.length; i++) {
+                if (userBlocks[i].previousHash !== userBlocks[i-1].hash) {
+                    isValid = false;
+                    break;
+                }
+            }
+            
+            if (isValid) {
+                displayMessage('✅ Blockchain integrity verified! All records are secure.', 'success');
+            } else {
+                displayMessage('❌ Blockchain integrity compromised! Please contact support.', 'error');
+            }
+        }
+
+        function downloadBlockchain() {
+            const userEmail = currentUser.email;
+            const userBlocks = userBlockchains[userEmail] || [];
+            
+            if (userBlocks.length <= 1) {
+                displayMessage('📄 No blockchain data to download.', 'info');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(userBlocks, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `${currentUser.name}_blockchain_${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            displayMessage('💾 Blockchain downloaded successfully!', 'success');
+        }
+
+        function refreshAppointments() {
+            loadOverviewAppointments();
+            displayMessage('🔄 Appointments refreshed!', 'success');
+        }
+
+        // Settings Functions
+        function showSettings(tab = 'theme') {
+            // Hide all sections
+            document.getElementById('userDashboard').style.display = 'none';
+            document.getElementById('personalRecordsSection').style.display = 'none';
+            document.getElementById('blockchainSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('recordsOverviewSection')?.style.setProperty('display', 'none');
+            
+            // Show settings section
+            document.getElementById('settingsSection').style.display = 'block';
+            
+            // Show specific tab
+            if (tab) {
+                showSettingsTab(tab);
+            }
+        }
+
+        function showSettingsTab(tabName) {
+            // Hide all tab panes
+            document.querySelectorAll('.settings-tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.settings-tabs .tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load current settings for the tab
+            loadCurrentSettings(tabName);
+        }
+
+        function loadCurrentSettings(tabName) {
+            switch (tabName) {
+                case 'theme':
+                    loadThemeSettings();
+                    break;
+                case 'security':
+                    loadSecuritySettings();
+                    break;
+                case 'privacy':
+                    loadPrivacySettings();
+                    break;
+                case 'location':
+                    loadLocationSettings();
+                    break;
+                case 'policies':
+                    loadPolicySettings();
+                    break;
+            }
+        }
+
+        function loadThemeSettings() {
+            const currentTheme = localStorage.getItem('cellBlockTheme') || 'light';
+            
+            // Update radio buttons and visual selection
+            document.getElementById('lightChoice').checked = currentTheme === 'light';
+            document.getElementById('darkChoice').checked = currentTheme === 'dark';
+            
+            // Update theme choice visual feedback
+            document.querySelectorAll('.theme-choice').forEach(choice => {
+                choice.classList.remove('active');
+            });
+            
+            if (currentTheme === 'light') {
+                document.querySelector('.theme-choice').classList.add('active');
+            } else {
+                document.querySelectorAll('.theme-choice')[1].classList.add('active');
+            }
+        }
+
+        function loadSecuritySettings() {
+            // Load 2FA status from localStorage
+            const twoFactorEnabled = localStorage.getItem('cellBlock2FA') === 'true';
+            document.getElementById('twoFactorAuth').checked = twoFactorEnabled;
+        }
+
+        function loadPrivacySettings() {
+            // Load privacy preferences
+            // This would typically come from backend
+            console.log('Privacy settings loaded');
+        }
+
+        function loadLocationSettings() {
+            // Load saved location data
+            const savedAddress = localStorage.getItem('cellBlockAddress');
+            if (savedAddress) {
+                document.getElementById('primaryAddress').value = savedAddress;
+            }
+            
+            const emergencyName = localStorage.getItem('cellBlockEmergencyName');
+            const emergencyPhone = localStorage.getItem('cellBlockEmergencyPhone');
+            
+            if (emergencyName) document.getElementById('emergencyName').value = emergencyName;
+            if (emergencyPhone) document.getElementById('emergencyPhone').value = emergencyPhone;
+        }
+
+        function loadPolicySettings() {
+            // Load policy acceptance status
+            console.log('Policy settings loaded');
+        }
+
+        // Settings Action Functions
+        function changePassword() {
+            const current = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            
+            if (!current || !newPass || !confirm) {
+                displayMessage('❌ Please fill in all password fields', 'error');
+                return;
+            }
+            
+            if (newPass !== confirm) {
+                displayMessage('❌ New passwords do not match', 'error');
+                return;
+            }
+            
+            if (newPass.length < 6) {
+                displayMessage('❌ Password must be at least 6 characters', 'error');
+                return;
+            }
+            
+            // In a real app, this would verify current password with backend
+            if (current !== currentUser.password) {
+                displayMessage('❌ Current password is incorrect', 'error');
+                return;
+            }
+            
+            // Update password
+            currentUser.password = newPass;
+            
+            // Update in users storage
+            const users = JSON.parse(localStorage.getItem('cellBlockUsers') || '{}');
+            users[currentUser.email] = currentUser;
+            localStorage.setItem('cellBlockUsers', JSON.stringify(users));
+            localStorage.setItem('cellBlockCurrentUser', JSON.stringify(currentUser));
+            
+            // Clear form
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            
+            displayMessage('✅ Password updated successfully!', 'success');
+        }
+
+        function toggleTwoFactor(enabled) {
+            localStorage.setItem('cellBlock2FA', enabled.toString());
+            if (enabled) {
+                displayMessage('🔒 Two-factor authentication enabled', 'success');
+                // In a real app, this would set up 2FA with the backend
+            } else {
+                displayMessage('🔓 Two-factor authentication disabled', 'info');
+            }
+        }
+
+        function detectLocation() {
+            if (navigator.geolocation) {
+                displayMessage('📍 Detecting your location...', 'info');
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        // In a real app, you would use reverse geocoding to get address
+                        const lat = position.coords.latitude.toFixed(4);
+                        const lng = position.coords.longitude.toFixed(4);
+                        const address = `Lat: ${lat}, Lng: ${lng} (Coordinates)`;
+                        
+                        document.getElementById('primaryAddress').value = address;
+                        localStorage.setItem('cellBlockAddress', address);
+                        displayMessage('📍 Location detected successfully!', 'success');
+                    },
+                    function(error) {
+                        displayMessage('❌ Unable to detect location', 'error');
+                    }
+                );
+            } else {
+                displayMessage('❌ Geolocation not supported by browser', 'error');
+            }
+        }
+
+        function saveEmergencyContact() {
+            const name = document.getElementById('emergencyName').value;
+            const phone = document.getElementById('emergencyPhone').value;
+            
+            if (!name || !phone) {
+                displayMessage('❌ Please enter both name and phone number', 'error');
+                return;
+            }
+            
+            localStorage.setItem('cellBlockEmergencyName', name);
+            localStorage.setItem('cellBlockEmergencyPhone', phone);
+            
+            displayMessage('✅ Emergency contact saved successfully!', 'success');
+        }
+
+        function downloadAllData() {
+            const userData = {
+                user: currentUser,
+                blockchain: userBlockchains[currentUser.email] || [],
+                settings: {
+                    theme: localStorage.getItem('cellBlockTheme'),
+                    address: localStorage.getItem('cellBlockAddress'),
+                    emergencyContact: {
+                        name: localStorage.getItem('cellBlockEmergencyName'),
+                        phone: localStorage.getItem('cellBlockEmergencyPhone')
+                    }
+                },
+                bookings: JSON.parse(localStorage.getItem('cellBlockBookings') || '[]')
+                    .filter(booking => booking.userId === currentUser.email),
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(userData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `CellBlock_${currentUser.name}_Complete_Data_${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            displayMessage('📤 All data downloaded successfully!', 'success');
+        }
+
+        function scheduleDataExport() {
+            // In a real app, this would set up automatic exports
+            displayMessage('📅 Monthly data export scheduled! (Feature coming soon)', 'info');
+        }
+
+        function requestAccountDeletion() {
+            const confirmDelete = confirm(
+                '⚠️ WARNING: This will permanently delete your account and all associated data.\n\n' +
+                'This action cannot be undone. Are you absolutely sure you want to delete your account?'
+            );
+            
+            if (!confirmDelete) return;
+            
+            const finalConfirm = confirm(
+                '🔴 FINAL CONFIRMATION: This is your last chance to cancel.\n\n' +
+                'Type your email address in the next prompt to confirm deletion.'
+            );
+            
+            if (!finalConfirm) return;
+            
+            const emailConfirm = prompt('Please type your email address to confirm account deletion:');
+            
+            if (emailConfirm !== currentUser.email) {
+                displayMessage('❌ Email confirmation failed. Account deletion cancelled.', 'error');
+                return;
+            }
+            
+            // Delete user data
+            const users = JSON.parse(localStorage.getItem('cellBlockUsers') || '{}');
+            delete users[currentUser.email];
+            localStorage.setItem('cellBlockUsers', JSON.stringify(users));
+            
+            // Delete user blockchain
+            const blockchains = JSON.parse(localStorage.getItem('cellBlockBlockchains') || '{}');
+            delete blockchains[currentUser.email];
+            localStorage.setItem('cellBlockBlockchains', JSON.stringify(blockchains));
+            
+            // Delete user bookings
+            const bookings = JSON.parse(localStorage.getItem('cellBlockBookings') || '[]');
+            const filteredBookings = bookings.filter(booking => booking.userId !== currentUser.email);
+            localStorage.setItem('cellBlockBookings', JSON.stringify(filteredBookings));
+            
+            // Clear current session
+            localStorage.removeItem('cellBlockCurrentUser');
+            
+            alert('✅ Your account has been permanently deleted. You will now be redirected to the home page.');
+            
+            // Reload page to show welcome screen
+            window.location.reload();
+        }
+
+        function viewPolicy(policyType) {
+            const policies = {
+                privacy: `CELL BLOCK PRIVACY POLICY
+
+Last Updated: December 2024
+
+We are committed to protecting your health information and privacy rights.
+
+Key Points:
+• Your medical data is encrypted and stored securely using blockchain technology
+• We never share your personal health information without your explicit consent
+• You have complete control over who can access your medical records
+• All data transmissions are secured with industry-standard encryption
+
+Data Collection:
+We collect only the information necessary to provide our healthcare services:
+- Medical records you choose to store
+- Appointment information
+- Account credentials and contact information
+- Usage analytics (anonymized)
+
+Your Rights:
+- Access your data at any time
+- Export all your information
+- Delete your account and all associated data
+- Control sharing preferences
+
+Contact us at privacy@cellblock.health for questions.`,
+
+                terms: `CELL BLOCK TERMS OF SERVICE
+
+Last Updated: December 2024
+
+By using Cell Block, you agree to these terms.
+
+Service Description:
+Cell Block provides a secure, blockchain-based platform for managing personal medical records and scheduling healthcare appointments.
+
+User Responsibilities:
+• Provide accurate medical information
+• Keep your account credentials secure
+• Use the service lawfully and responsibly
+• Respect the privacy of other users
+
+Service Availability:
+• We strive for 99.9% uptime
+• Planned maintenance will be announced in advance
+• Emergency maintenance may occur without notice
+
+Liability:
+• Cell Block is not a substitute for professional medical advice
+• Consult healthcare providers for medical decisions
+• We are not liable for medical decisions based on stored data
+
+Contact: legal@cellblock.health`,
+
+                hipaa: `HIPAA COMPLIANCE INFORMATION
+
+Cell Block is committed to HIPAA compliance and protecting your health information.
+
+Protected Health Information (PHI):
+All medical records and health-related data stored in Cell Block are considered PHI and are protected under HIPAA regulations.
+
+Security Safeguards:
+• Administrative safeguards: Staff training, access controls
+• Physical safeguards: Secure data centers, workstation security
+• Technical safeguards: Encryption, audit logs, access monitoring
+
+Your HIPAA Rights:
+• Right to access your PHI
+• Right to request amendments to your PHI
+• Right to an accounting of disclosures
+• Right to request restrictions on use/disclosure
+• Right to request confidential communications
+• Right to file a complaint
+
+Breach Notification:
+We will notify you within 60 days of discovering any breach of your PHI.
+
+Contact our HIPAA Privacy Officer: hipaa@cellblock.health`
+            };
+            
+            const policyContent = policies[policyType] || 'Policy not found.';
+            
+            // Create modal to display policy
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+            `;
+            
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                max-width: 600px;
+                max-height: 80vh;
+                overflow-y: auto;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            `;
+            
+            if (document.body.classList.contains('dark-mode')) {
+                content.style.background = '#2c3e50';
+                content.style.color = 'white';
+            }
+            
+            content.innerHTML = `
+                <h2 style="color: #4a90e2; margin-bottom: 20px;">${policyType.charAt(0).toUpperCase() + policyType.slice(1)} Policy</h2>
+                <pre style="white-space: pre-wrap; font-family: inherit; line-height: 1.6;">${policyContent}</pre>
+                <div style="text-align: center; margin-top: 30px;">
+                    <button onclick="this.closest('.modal').remove()" style="
+                        background: #4a90e2;
+                        color: white;
+                        border: none;
+                        padding: 12px 30px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-size: 16px;
+                    ">Close</button>
+                </div>
+            `;
+            
+            modal.appendChild(content);
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+            
+            // Close on outside click
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        function updateUserStatistics() {
+            const userRecords = currentUser.records || [];
+            const userEmail = currentUser.email;
+            const userBlocks = userBlockchains[userEmail] || [];
+            
+            document.getElementById('userTotalRecords').textContent = userRecords.length;
+            document.getElementById('userTotalBlocks').textContent = userBlocks.length;
+            document.getElementById('userVerifiedRecords').textContent = userBlocks.filter(b => b.verified).length;
+        }
+
+        // Test theme functionality
+        function testThemeSwitch() {
+            console.log('🔧 Testing theme switch functionality...');
+            const body = document.body;
+            const currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            console.log(`Switching from ${currentTheme} to ${newTheme}`);
+            setTheme(newTheme);
+            
+            // Verify the switch worked
+            setTimeout(() => {
+                const updatedTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
+                console.log(`Theme switch result: ${updatedTheme}`);
+                if (updatedTheme === newTheme) {
+                    console.log('✅ Theme switch test PASSED');
+                } else {
+                    console.log('❌ Theme switch test FAILED');
+                }
+            }, 100);
+        }
+
+        // Initialize when DOM is ready
+        function initializeApp() {
+            console.log('Initializing Cell Block app...');
+            
+            // Load stored data first
+            loadStoredData();
+            
+            // Load and apply theme
+            loadTheme();
+            
+            // Check if user is already logged in
+            const storedUser = localStorage.getItem('cellBlockCurrentUser');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                
+                // Load user blockchains
+                const storedBlockchains = localStorage.getItem('cellBlockBlockchains');
+                userBlockchains = storedBlockchains ? JSON.parse(storedBlockchains) : {};
+                
+                showUserDashboard();
+                console.log('User auto-logged in:', currentUser.email);
+            } else {
+                // Show welcome screen
+                document.getElementById('welcomeHeader').style.display = 'block';
+                document.getElementById('userDashboard').style.display = 'none';
+            }
+            
+            // Get all elements
+            const lightOption = document.getElementById('lightThemeOption');
+            const darkOption = document.getElementById('darkThemeOption');
+            const settingsToggle = document.getElementById('settingsToggle');
+            
+            console.log('Elements found:', {
+                lightOption: !!lightOption,
+                darkOption: !!darkOption,
+                settingsToggle: !!settingsToggle
+            });
+            
+            // Theme switching event listeners - Fixed implementation
+            if (lightOption) {
+                // Remove any existing listeners first
+                lightOption.onclick = null;
+                
+                lightOption.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Light theme clicked');
+                    setTheme('light');
+                });
+                
+                // Also add click listener to the radio button
+                const lightRadio = document.getElementById('lightTheme');
+                if (lightRadio) {
+                    lightRadio.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        console.log('Light theme radio clicked');
+                        setTheme('light');
+                    });
+                }
+                
+                console.log('Light theme listeners added');
+            }
+            
+            if (darkOption) {
+                // Remove any existing listeners first
+                darkOption.onclick = null;
+                
+                darkOption.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Dark theme clicked');
+                    setTheme('dark');
+                });
+                
+                // Also add click listener to the radio button
+                const darkRadio = document.getElementById('darkTheme');
+                if (darkRadio) {
+                    darkRadio.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        console.log('Dark theme radio clicked');
+                        setTheme('dark');
+                    });
+                }
+                
+                console.log('Dark theme listeners added');
+            }
+            
+            // Settings toggle listener
+            if (settingsToggle) {
+                settingsToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    console.log('Settings toggle clicked');
+                    toggleSettings();
+                });
+                console.log('Settings toggle listener added');
+            }
+            
+            // Close settings panel when clicking outside
+            document.addEventListener('click', function(event) {
+                const panel = document.getElementById('settingsPanel');
+                const toggle = document.getElementById('settingsToggle');
+                
+                if (panel && toggle && !panel.contains(event.target) && !toggle.contains(event.target)) {
+                    const isVisible = panel.style.display === 'block' || window.getComputedStyle(panel).display === 'block';
+                    if (isVisible) {
+                        panel.style.display = 'none';
+                        console.log('Settings panel closed by outside click');
+                    }
+                }
+            });
+            
+            console.log('Cell Block app initialized successfully');
+            
+            // Add theme test function to global scope for debugging
+            window.testTheme = testThemeSwitch;
+            window.setThemeManual = setTheme;
+            
+            console.log('💡 Theme debugging commands available:');
+            console.log('   testTheme() - Test theme switching');
+            console.log('   setThemeManual("light") - Force light theme');
+            console.log('   setThemeManual("dark") - Force dark theme');
+        }
+
+        // Multiple initialization methods to ensure it works
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+        
+        // Additional fallback
+        window.addEventListener('load', function() {
+            // Double-check initialization after everything loads
+            setTimeout(() => {
+                if (!document.getElementById('lightThemeOption')?.hasAttribute('data-initialized')) {
+                    console.log('Fallback initialization triggered');
+                    initializeApp();
+                    // Mark as initialized
+                    const lightOption = document.getElementById('lightThemeOption');
+                    if (lightOption) lightOption.setAttribute('data-initialized', 'true');
+                }
+                
+                // Final theme verification
+                const savedTheme = localStorage.getItem('cellBlockTheme') || 'light';
+                const bodyHasDark = document.body.classList.contains('dark-mode');
+                const themeMatch = (savedTheme === 'dark' && bodyHasDark) || (savedTheme === 'light' && !bodyHasDark);
+                
+                if (!themeMatch) {
+                    console.log('🔧 Theme mismatch detected, fixing...');
+                    setTheme(savedTheme);
+                }
+            }, 200);
+        });
+
+
+    </script>
+</body>
+</html>

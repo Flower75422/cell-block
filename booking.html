@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Professionals Booking - Cell Block</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        body.dark-mode header {
+            color: white;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: #ffd700;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+            animation: logoIntro 1s ease-out;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        @keyframes logoIntro {
+            0% { opacity: 0; transform: scale(0.5) rotate(-180deg); }
+            50% { opacity: 0.8; transform: scale(1.2) rotate(-90deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode h1 {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Navigation */
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: linear-gradient(45deg, #4a90e2, #667eea);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        .nav-button.secondary {
+            background: linear-gradient(45deg, #95a5a6, #bdc3c7);
+        }
+
+        /* Search and Filter Section */
+        .search-filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .search-filter-section {
+            background: #2c3e50;
+        }
+
+        .search-container {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            padding: 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        body.dark-mode .search-input {
+            background: #34495e;
+            border: 2px solid #4a90e2;
+            color: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        body.dark-mode .search-input:focus {
+            border-color: #ffd700;
+        }
+
+        .search-button {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .search-button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Filter Categories */
+        .filter-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .category-filter {
+            background: #f8f9fa;
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .category-filter {
+            background: #34495e;
+            border: 2px solid #4a90e2;
+        }
+
+        .category-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-filter.active {
+            background: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        body.dark-mode .category-filter.active {
+            background: #ffd700;
+            color: #333;
+            border-color: #ffd700;
+        }
+
+        .category-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Professional Cards Grid */
+        .professionals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .professional-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        body.dark-mode .professional-card {
+            background: #2c3e50;
+        }
+
+        .professional-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .professional-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .professional-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #4a90e2, #667eea);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .professional-info h3 {
+            color: #4a90e2;
+            margin-bottom: 5px;
+        }
+
+        body.dark-mode .professional-info h3 {
+            color: #ffd700;
+        }
+
+        .professional-category {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+
+        body.dark-mode .professional-category {
+            background: #34495e;
+            color: #ffd700;
+        }
+
+        .professional-details {
+            margin: 15px 0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .availability-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .available {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .busy {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .offline {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        body.dark-mode .available {
+            background: #27ae60;
+            color: white;
+        }
+
+        body.dark-mode .busy {
+            background: #e74c3c;
+            color: white;
+        }
+
+        body.dark-mode .offline {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .book-button {
+            width: 100%;
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .book-button:hover {
+            transform: scale(1.02);
+        }
+
+        .book-button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Booking Modal */
+        .booking-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .booking-modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        body.dark-mode .booking-modal-content {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        body.dark-mode .close-modal {
+            color: #bdc3c7;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .time-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .time-slot {
+            padding: 12px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        body.dark-mode .time-slot {
+            background: #34495e;
+            border: 2px solid #4a90e2;
+            color: white;
+        }
+
+        .time-slot:hover {
+            border-color: #4a90e2;
+            background: #f0f8ff;
+        }
+
+        body.dark-mode .time-slot:hover {
+            border-color: #ffd700;
+            background: #4a5568;
+        }
+
+        .time-slot.selected {
+            background: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        body.dark-mode .time-slot.selected {
+            background: #ffd700;
+            color: #333;
+            border-color: #ffd700;
+        }
+
+        .time-slot.unavailable {
+            background: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        body.dark-mode .form-group label {
+            color: #ecf0f1;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        body.dark-mode .form-group input, 
+        body.dark-mode .form-group select, 
+        body.dark-mode .form-group textarea {
+            background: #34495e;
+            border: 2px solid #4a90e2;
+            color: white;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        body.dark-mode .form-group input:focus, 
+        body.dark-mode .form-group select:focus, 
+        body.dark-mode .form-group textarea:focus {
+            border-color: #ffd700;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4a90e2, #667eea);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #95a5a6, #bdc3c7);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            flex: 1;
+        }
+
+        .btn-primary:hover, .btn-secondary:hover {
+            transform: scale(1.05);
+        }
+
+        /* User Navigation */
+        .user-nav {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #333;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .user-info {
+            background: rgba(44, 62, 80, 0.9);
+            color: white;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Settings Toggle */
+        .settings-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .settings-toggle:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        body.dark-mode .settings-toggle {
+            background: #ffd700;
+            color: #333;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 999;
+            display: none;
+            min-width: 200px;
+        }
+
+        body.dark-mode .settings-panel {
+            background: #2c3e50;
+            color: white;
+        }
+
+        body.dark-mode .settings-panel h3 {
+            color: #ffd700 !important;
+        }
+
+        .theme-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-option:hover {
+            background: #f0f0f0;
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .theme-option:hover {
+            background: #34495e;
+        }
+
+        .theme-option input {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .theme-option label {
+            cursor: pointer;
+            user-select: none;
+            width: 100%;
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .search-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .professionals-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-bar {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .filter-categories {
+                grid-template-columns: 1fr;
+            }
+            
+            .time-slots-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4a90e2;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- User Navigation -->
+    <div class="user-nav" id="userNav">
+        <div class="user-info" id="userInfo">
+            👤 Welcome, <span id="currentUserName">User</span>
+        </div>
+        <button class="logout-btn" onclick="logoutUser()">Logout</button>
+    </div>
+
+    <!-- Settings Toggle -->
+    <button class="settings-toggle" id="settingsToggle">⚙️</button>
+    
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+        <h3 style="margin-bottom: 15px; color: #4a90e2;">🎨 Theme Settings</h3>
+        <div class="theme-option" id="lightThemeOption" style="background: #4a90e2; color: white;">
+            <input type="radio" name="theme" id="lightTheme" checked>
+            <label for="lightTheme">☀️ Light Mode</label>
+        </div>
+        <div class="theme-option" id="darkThemeOption">
+            <input type="radio" name="theme" id="darkTheme">
+            <label for="darkTheme">🌙 Dark Mode</label>
+        </div>
+        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; font-size: 0.8rem; opacity: 0.7;">
+            💡 Your theme preference is automatically saved
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="booking-modal" id="bookingModal">
+        <div class="booking-modal-content">
+            <button class="close-modal" onclick="closeBookingModal()">×</button>
+            <div class="modal-header">
+                <h2>📅 Book Appointment</h2>
+                <p id="modalProfessionalName">Dr. Professional Name</p>
+            </div>
+            
+            <form id="bookingForm" onsubmit="submitBooking(event)">
+                <div class="form-group">
+                    <label for="appointmentDate">Appointment Date</label>
+                    <input type="date" id="appointmentDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Available Time Slots</label>
+                    <div class="time-slots-grid" id="timeSlotsGrid">
+                        <!-- Time slots will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="appointmentType">Appointment Type</label>
+                    <select id="appointmentType" required>
+                        <option value="">Select Type</option>
+                        <option value="consultation">General Consultation</option>
+                        <option value="follow-up">Follow-up Visit</option>
+                        <option value="emergency">Emergency Consultation</option>
+                        <option value="routine">Routine Check-up</option>
+                        <option value="specialist">Specialist Consultation</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="symptoms">Symptoms/Reason for Visit</label>
+                    <textarea id="symptoms" rows="4" placeholder="Please describe your symptoms or reason for the appointment..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contactPhone">Contact Phone</label>
+                    <input type="tel" id="contactPhone" placeholder="+1 (555) 123-4567" required>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Book Appointment</button>
+                    <button type="button" class="btn-secondary" onclick="closeBookingModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <header>
+            <div class="logo">🏥</div>
+            <h1>Medical Professional Booking</h1>
+            <p class="subtitle">Connect with qualified healthcare professionals online</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-bar">
+            <a href="index.html" class="nav-button secondary">← Back to Health Records</a>
+            <button class="nav-button" onclick="showMyBookings()">📅 My Bookings</button>
+            <button class="nav-button" onclick="refreshProfessionals()">🔄 Refresh</button>
+        </nav>
+
+        <!-- Search and Filter Section -->
+        <div class="search-filter-section">
+            <h2 style="margin-bottom: 20px; color: #4a90e2;">🔍 Find Your Healthcare Professional</h2>
+            
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search by name, specialization, or location...">
+                <button class="search-button" onclick="searchProfessionals()">Search</button>
+            </div>
+            
+            <div class="filter-categories">
+                <div class="category-filter active" data-category="all" onclick="filterByCategory('all')">
+                    <span class="category-icon">👥</span>
+                    <div>All Professionals</div>
+                </div>
+                <div class="category-filter" data-category="doctor" onclick="filterByCategory('doctor')">
+                    <span class="category-icon">👨‍⚕️</span>
+                    <div>Doctors</div>
+                </div>
+                <div class="category-filter" data-category="nurse" onclick="filterByCategory('nurse')">
+                    <span class="category-icon">👩‍⚕️</span>
+                    <div>Nurses</div>
+                </div>
+                <div class="category-filter" data-category="technician" onclick="filterByCategory('technician')">
+                    <span class="category-icon">🔬</span>
+                    <div>Medical Technicians</div>
+                </div>
+                <div class="category-filter" data-category="administrator" onclick="filterByCategory('administrator')">
+                    <span class="category-icon">💼</span>
+                    <div>Administrators</div>
+                </div>
+                <div class="category-filter" data-category="caretaker" onclick="filterByCategory('caretaker')">
+                    <span class="category-icon">🤝</span>
+                    <div>Caretakers</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Professionals Grid -->
+        <div class="professionals-grid" id="professionalsGrid">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading healthcare professionals...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme management functions (shared with main app)
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('cellBlockTheme') || 'light';
+            const validTheme = (savedTheme === 'dark') ? 'dark' : 'light';
+            setTheme(validTheme);
+        }
+
+        function setTheme(theme) {
+            const body = document.body;
+            const lightRadio = document.getElementById('lightTheme');
+            const darkRadio = document.getElementById('darkTheme');
+            const lightOption = document.getElementById('lightThemeOption');
+            const darkOption = document.getElementById('darkThemeOption');
+            
+            body.classList.remove('dark-mode');
+            
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                if (darkRadio) darkRadio.checked = true;
+                if (lightRadio) lightRadio.checked = false;
+                if (darkOption) {
+                    darkOption.style.backgroundColor = '#ffd700';
+                    darkOption.style.color = '#333';
+                }
+                if (lightOption) {
+                    lightOption.style.backgroundColor = '';
+                    lightOption.style.color = '';
+                }
+                localStorage.setItem('cellBlockTheme', 'dark');
+            } else {
+                if (lightRadio) lightRadio.checked = true;
+                if (darkRadio) darkRadio.checked = false;
+                if (lightOption) {
+                    lightOption.style.backgroundColor = '#4a90e2';
+                    lightOption.style.color = 'white';
+                }
+                if (darkOption) {
+                    darkOption.style.backgroundColor = '';
+                    darkOption.style.color = '';
+                }
+                localStorage.setItem('cellBlockTheme', 'light');
+            }
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            const isVisible = panel.style.display === 'block' || window.getComputedStyle(panel).display === 'block';
+            
+            if (isVisible) {
+                panel.style.display = 'none';
+            } else {
+                panel.style.display = 'block';
+                
+                const currentTheme = localStorage.getItem('cellBlockTheme') || 'light';
+                const lightOption = document.getElementById('lightThemeOption');
+                const darkOption = document.getElementById('darkThemeOption');
+                
+                if (currentTheme === 'dark') {
+                    if (darkOption) {
+                        darkOption.style.backgroundColor = '#ffd700';
+                        darkOption.style.color = '#333';
+                    }
+                    if (lightOption) {
+                        lightOption.style.backgroundColor = '';
+                        lightOption.style.color = '';
+                    }
+                } else {
+                    if (lightOption) {
+                        lightOption.style.backgroundColor = '#4a90e2';
+                        lightOption.style.color = 'white';
+                    }
+                    if (darkOption) {
+                        darkOption.style.backgroundColor = '';
+                        darkOption.style.color = '';
+                    }
+                }
+            }
+        }
+
+        // User management
+        let currentUser = null;
+
+        function checkUserAuth() {
+            const storedUser = localStorage.getItem('cellBlockCurrentUser');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                document.getElementById('userNav').style.display = 'flex';
+                document.getElementById('currentUserName').textContent = currentUser.name;
+            } else {
+                // Redirect to main page if not logged in
+                alert('Please log in to access the booking system.');
+                window.location.href = 'index.html';
+            }
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('cellBlockCurrentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Sample medical professionals data
+        const medicalProfessionals = [
+            {
+                id: 1,
+                name: "Dr. Sarah Johnson",
+                category: "doctor",
+                specialization: "Cardiology",
+                experience: "15 years",
+                rating: 4.9,
+                location: "New York Medical Center",
+                status: "available",
+                price: "$150/hour",
+                avatar: "👩‍⚕️",
+                qualifications: "MD, FACC",
+                languages: ["English", "Spanish"],
+                nextAvailable: "Today 2:00 PM"
+            },
+            {
+                id: 2,
+                name: "Dr. Michael Chen",
+                category: "doctor",
+                specialization: "Neurology",
+                experience: "12 years",
+                rating: 4.8,
+                location: "Brain Health Institute",
+                status: "busy",
+                price: "$180/hour",
+                avatar: "👨‍⚕️",
+                qualifications: "MD, PhD",
+                languages: ["English", "Mandarin"],
+                nextAvailable: "Tomorrow 10:00 AM"
+            },
+            {
+                id: 3,
+                name: "Nurse Emily Davis",
+                category: "nurse",
+                specialization: "Pediatric Care",
+                experience: "8 years",
+                rating: 4.7,
+                location: "Children's Hospital",
+                status: "available",
+                price: "$80/hour",
+                avatar: "👩‍⚕️",
+                qualifications: "RN, BSN",
+                languages: ["English"],
+                nextAvailable: "Today 4:00 PM"
+            },
+            {
+                id: 4,
+                name: "James Wilson",
+                category: "technician",
+                specialization: "Radiology Technician",
+                experience: "10 years",
+                rating: 4.6,
+                location: "Imaging Center",
+                status: "available",
+                price: "$90/hour",
+                avatar: "🔬",
+                qualifications: "RT, ARRT",
+                languages: ["English"],
+                nextAvailable: "Today 1:00 PM"
+            },
+            {
+                id: 5,
+                name: "Lisa Anderson",
+                category: "administrator",
+                specialization: "Healthcare Coordinator",
+                experience: "6 years",
+                rating: 4.5,
+                location: "Medical Administrative Services",
+                status: "available",
+                price: "$60/hour",
+                avatar: "💼",
+                qualifications: "MHA, CMA",
+                languages: ["English", "French"],
+                nextAvailable: "Today 3:00 PM"
+            },
+            {
+                id: 6,
+                name: "Robert Taylor",
+                category: "caretaker",
+                specialization: "Senior Care Specialist",
+                experience: "7 years",
+                rating: 4.8,
+                location: "Home Care Services",
+                status: "available",
+                price: "$45/hour",
+                avatar: "🤝",
+                qualifications: "CNA, CPR Certified",
+                languages: ["English"],
+                nextAvailable: "Today 5:00 PM"
+            },
+            {
+                id: 7,
+                name: "Dr. Maria Rodriguez",
+                category: "doctor",
+                specialization: "Dermatology",
+                experience: "9 years",
+                rating: 4.9,
+                location: "Skin Health Clinic",
+                status: "available",
+                price: "$140/hour",
+                avatar: "👩‍⚕️",
+                qualifications: "MD, Dermatology Board Certified",
+                languages: ["English", "Spanish"],
+                nextAvailable: "Today 11:00 AM"
+            },
+            {
+                id: 8,
+                name: "Nurse Patricia Brown",
+                category: "nurse",
+                specialization: "Critical Care",
+                experience: "14 years",
+                rating: 4.7,
+                location: "ICU Department",
+                status: "offline",
+                price: "$95/hour",
+                avatar: "👩‍⚕️",
+                qualifications: "RN, CCRN",
+                languages: ["English"],
+                nextAvailable: "Tomorrow 8:00 AM"
+            },
+            {
+                id: 9,
+                name: "Alex Kim",
+                category: "technician",
+                specialization: "Laboratory Technician",
+                experience: "5 years",
+                rating: 4.4,
+                location: "Diagnostic Laboratory",
+                status: "available",
+                price: "$70/hour",
+                avatar: "🔬",
+                qualifications: "MLT, ASCP",
+                languages: ["English", "Korean"],
+                nextAvailable: "Today 12:00 PM"
+            },
+            {
+                id: 10,
+                name: "Margaret Clark",
+                category: "caretaker",
+                specialization: "Child Care Specialist",
+                experience: "11 years",
+                rating: 4.9,
+                location: "Pediatric Home Care",
+                status: "busy",
+                price: "$50/hour",
+                avatar: "🤝",
+                qualifications: "Child Development Associate",
+                languages: ["English"],
+                nextAvailable: "Tomorrow 2:00 PM"
+            }
+        ];
+
+        let filteredProfessionals = [...medicalProfessionals];
+        let selectedProfessional = null;
+        let selectedTimeSlot = null;
+
+        // Display functions
+        function displayProfessionals(professionals) {
+            const grid = document.getElementById('professionalsGrid');
+            
+            if (professionals.length === 0) {
+                grid.innerHTML = `
+                    <div class="loading">
+                        <p>No professionals found matching your criteria.</p>
+                        <button onclick="resetFilters()" class="search-button">Reset Filters</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            professionals.forEach(professional => {
+                const statusClass = professional.status;
+                const isAvailable = professional.status === 'available';
+                
+                html += `
+                    <div class="professional-card" onclick="selectProfessional(${professional.id})">
+                        <div class="professional-header">
+                            <div class="professional-avatar">${professional.avatar}</div>
+                            <div class="professional-info">
+                                <h3>${professional.name}</h3>
+                                <div class="professional-category">${professional.category.charAt(0).toUpperCase() + professional.category.slice(1)}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="professional-details">
+                            <div class="detail-row">
+                                <span><strong>Specialization:</strong></span>
+                                <span>${professional.specialization}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span><strong>Experience:</strong></span>
+                                <span>${professional.experience}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span><strong>Rating:</strong></span>
+                                <span>⭐ ${professional.rating}/5</span>
+                            </div>
+                            <div class="detail-row">
+                                <span><strong>Location:</strong></span>
+                                <span>${professional.location}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span><strong>Price:</strong></span>
+                                <span>${professional.price}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span><strong>Languages:</strong></span>
+                                <span>${professional.languages.join(', ')}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="availability-status ${statusClass}">
+                            ${professional.status === 'available' ? '🟢 Available Now' : 
+                              professional.status === 'busy' ? '🟡 Busy' : '🔴 Offline'}
+                        </div>
+                        
+                        <div style="margin-bottom: 15px; font-size: 0.9rem; color: #666;">
+                            <strong>Next Available:</strong> ${professional.nextAvailable}
+                        </div>
+                        
+                        <button class="book-button" ${!isAvailable ? 'disabled' : ''}>
+                            ${isAvailable ? '📅 Book Appointment' : 'Currently Unavailable'}
+                        </button>
+                    </div>
+                `;
+            });
+            
+            grid.innerHTML = html;
+        }
+
+        // Filter and search functions
+        function filterByCategory(category) {
+            // Update active filter
+            document.querySelectorAll('.category-filter').forEach(filter => {
+                filter.classList.remove('active');
+            });
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            
+            // Filter professionals
+            if (category === 'all') {
+                filteredProfessionals = [...medicalProfessionals];
+            } else {
+                filteredProfessionals = medicalProfessionals.filter(prof => prof.category === category);
+            }
+            
+            displayProfessionals(filteredProfessionals);
+        }
+
+        function searchProfessionals() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (searchTerm === '') {
+                filteredProfessionals = [...medicalProfessionals];
+            } else {
+                filteredProfessionals = medicalProfessionals.filter(prof => 
+                    prof.name.toLowerCase().includes(searchTerm) ||
+                    prof.specialization.toLowerCase().includes(searchTerm) ||
+                    prof.location.toLowerCase().includes(searchTerm) ||
+                    prof.category.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            displayProfessionals(filteredProfessionals);
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('.category-filter').forEach(filter => {
+                filter.classList.remove('active');
+            });
+            document.querySelector('[data-category="all"]').classList.add('active');
+            
+            filteredProfessionals = [...medicalProfessionals];
+            displayProfessionals(filteredProfessionals);
+        }
+
+        function refreshProfessionals() {
+            const grid = document.getElementById('professionalsGrid');
+            grid.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Refreshing healthcare professionals...</p>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                displayProfessionals(filteredProfessionals);
+                displayMessage('✅ Professional list refreshed!', 'success');
+            }, 1000);
+        }
+
+        // Booking functions
+        function selectProfessional(professionalId) {
+            selectedProfessional = medicalProfessionals.find(prof => prof.id === professionalId);
+            
+            if (selectedProfessional.status !== 'available') {
+                displayMessage('❌ This professional is currently not available for booking.', 'error');
+                return;
+            }
+            
+            showBookingModal();
+        }
+
+        function showBookingModal() {
+            if (!selectedProfessional) return;
+            
+            document.getElementById('modalProfessionalName').textContent = 
+                `${selectedProfessional.name} - ${selectedProfessional.specialization}`;
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').setAttribute('min', today);
+            document.getElementById('appointmentDate').value = today;
+            
+            generateTimeSlots();
+            document.getElementById('bookingModal').style.display = 'flex';
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+            selectedProfessional = null;
+            selectedTimeSlot = null;
+            
+            // Reset form
+            document.getElementById('bookingForm').reset();
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+        }
+
+        function generateTimeSlots() {
+            const timeSlotsGrid = document.getElementById('timeSlotsGrid');
+            const timeSlots = [
+                '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+                '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+                '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'
+            ];
+            
+            let html = '';
+            timeSlots.forEach(time => {
+                // Randomly make some slots unavailable for demo
+                const isUnavailable = Math.random() < 0.3;
+                const unavailableClass = isUnavailable ? 'unavailable' : '';
+                
+                html += `
+                    <div class="time-slot ${unavailableClass}" 
+                         onclick="selectTimeSlot('${time}', this)"
+                         ${isUnavailable ? 'data-unavailable="true"' : ''}>
+                        ${time}
+                    </div>
+                `;
+            });
+            
+            timeSlotsGrid.innerHTML = html;
+        }
+
+        function selectTimeSlot(time, element) {
+            if (element.dataset.unavailable === 'true') {
+                displayMessage('⚠️ This time slot is not available.', 'warning');
+                return;
+            }
+            
+            // Remove previous selection
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            
+            // Select current slot
+            element.classList.add('selected');
+            selectedTimeSlot = time;
+        }
+
+        function submitBooking(event) {
+            event.preventDefault();
+            
+            if (!selectedTimeSlot) {
+                displayMessage('⚠️ Please select a time slot.', 'warning');
+                return;
+            }
+            
+            const bookingData = {
+                professionalId: selectedProfessional.id,
+                professionalName: selectedProfessional.name,
+                userId: currentUser.email,
+                userName: currentUser.name,
+                date: document.getElementById('appointmentDate').value,
+                time: selectedTimeSlot,
+                type: document.getElementById('appointmentType').value,
+                symptoms: document.getElementById('symptoms').value,
+                phone: document.getElementById('contactPhone').value,
+                bookingId: 'BK' + Date.now(),
+                createdAt: new Date().toISOString(),
+                status: 'confirmed'
+            };
+            
+            // Save booking to localStorage
+            let bookings = JSON.parse(localStorage.getItem('cellBlockBookings') || '[]');
+            bookings.push(bookingData);
+            localStorage.setItem('cellBlockBookings', JSON.stringify(bookings));
+            
+            // Add booking to user's records as well
+            const recordData = {
+                type: 'Appointment',
+                date: bookingData.date,
+                title: `Appointment with ${bookingData.professionalName}`,
+                details: `${bookingData.type} appointment scheduled for ${bookingData.time}. Symptoms/Reason: ${bookingData.symptoms}`,
+                provider: bookingData.professionalName,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save to user's medical records
+            const storedUsers = JSON.parse(localStorage.getItem('cellBlockUsers'));
+            if (storedUsers && storedUsers[currentUser.email]) {
+                storedUsers[currentUser.email].records.push(recordData);
+                localStorage.setItem('cellBlockUsers', JSON.stringify(storedUsers));
+                
+                // Update current user
+                currentUser.records.push(recordData);
+                localStorage.setItem('cellBlockCurrentUser', JSON.stringify(currentUser));
+            }
+            
+            displayMessage(`✅ Appointment booked successfully with ${selectedProfessional.name}!`, 'success');
+            closeBookingModal();
+        }
+
+        function showMyBookings() {
+            const bookings = JSON.parse(localStorage.getItem('cellBlockBookings') || '[]');
+            const userBookings = bookings.filter(booking => booking.userId === currentUser.email);
+            
+            if (userBookings.length === 0) {
+                displayMessage('📅 You have no bookings yet.', 'info');
+                return;
+            }
+            
+            let bookingsList = '📅 Your Upcoming Appointments:\n\n';
+            userBookings.forEach((booking, index) => {
+                bookingsList += `${index + 1}. ${booking.professionalName}\n`;
+                bookingsList += `   Date: ${booking.date} at ${booking.time}\n`;
+                bookingsList += `   Type: ${booking.type}\n`;
+                bookingsList += `   Booking ID: ${booking.bookingId}\n\n`;
+            });
+            
+            alert(bookingsList);
+        }
+
+        // Message display function
+        function displayMessage(message, type = 'success') {
+            const existingMessages = document.querySelectorAll('.toast-message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            const messageEl = document.createElement('div');
+            messageEl.className = 'toast-message';
+            
+            let backgroundColor = '#27ae60';
+            if (type === 'error') backgroundColor = '#e74c3c';
+            if (type === 'warning') backgroundColor = '#f39c12';
+            if (type === 'info') backgroundColor = '#3498db';
+            
+            messageEl.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${backgroundColor};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                z-index: 2001;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                font-weight: 500;
+                max-width: 300px;
+                word-wrap: break-word;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            messageEl.innerHTML = message;
+            document.body.appendChild(messageEl);
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            if (!document.querySelector('style[data-toast]')) {
+                style.setAttribute('data-toast', 'true');
+                document.head.appendChild(style);
+            }
+
+            setTimeout(() => {
+                if (messageEl && messageEl.parentNode) {
+                    messageEl.style.transform = 'translateX(100%)';
+                    messageEl.style.opacity = '0';
+                    setTimeout(() => {
+                        if (messageEl && messageEl.parentNode) {
+                            document.body.removeChild(messageEl);
+                        }
+                    }, 300);
+                }
+            }, 4000);
+        }
+
+        // Initialize the booking page
+        function initializeBookingPage() {
+            console.log('Initializing Medical Professional Booking page...');
+            
+            // Load theme
+            loadTheme();
+            
+            // Check user authentication
+            checkUserAuth();
+            
+            // Set up theme switching
+            const lightOption = document.getElementById('lightThemeOption');
+            const darkOption = document.getElementById('darkThemeOption');
+            const settingsToggle = document.getElementById('settingsToggle');
+            
+            if (lightOption) {
+                lightOption.onclick = null;
+                lightOption.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setTheme('light');
+                });
+                
+                const lightRadio = document.getElementById('lightTheme');
+                if (lightRadio) {
+                    lightRadio.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        setTheme('light');
+                    });
+                }
+            }
+            
+            if (darkOption) {
+                darkOption.onclick = null;
+                darkOption.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setTheme('dark');
+                });
+                
+                const darkRadio = document.getElementById('darkTheme');
+                if (darkRadio) {
+                    darkRadio.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        setTheme('dark');
+                    });
+                }
+            }
+            
+            if (settingsToggle) {
+                settingsToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleSettings();
+                });
+            }
+            
+            // Close settings panel when clicking outside
+            document.addEventListener('click', function(event) {
+                const panel = document.getElementById('settingsPanel');
+                const toggle = document.getElementById('settingsToggle');
+                
+                if (panel && toggle && !panel.contains(event.target) && !toggle.contains(event.target)) {
+                    const isVisible = panel.style.display === 'block' || window.getComputedStyle(panel).display === 'block';
+                    if (isVisible) {
+                        panel.style.display = 'none';
+                    }
+                }
+            });
+            
+            // Set up search functionality
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        searchProfessionals();
+                    }
+                });
+            }
+            
+            // Update appointment date when changed
+            const appointmentDate = document.getElementById('appointmentDate');
+            if (appointmentDate) {
+                appointmentDate.addEventListener('change', generateTimeSlots);
+            }
+            
+            // Load and display professionals
+            setTimeout(() => {
+                displayProfessionals(medicalProfessionals);
+            }, 500);
+            
+            console.log('Booking page initialized successfully');
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeBookingPage);
+        } else {
+            initializeBookingPage();
+        }
+    </script>
+</body>
+</html> 
